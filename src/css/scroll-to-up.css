@@ -1,0 +1,25 @@
+.arrow-up {
+  position: fixed;
+  z-index: 999;
+  bottom: 60px;
+  right: 26px;
+  fill: #4e75ff;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  opacity: 0;
+
+  transition: opacity 400ms ease, background-color, 500ms ease, fill 500ms ease;
+}
+
+.arrow-up:hover {
+  background-color: #6c8cff;
+  fill: #fff;
+}
+
+.is-shown {
+  opacity: 1;
+}
