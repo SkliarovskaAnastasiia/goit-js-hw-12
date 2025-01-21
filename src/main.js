@@ -1,18 +1,33 @@
-import { searchFormEl, fetchImages } from './js/pixabay-api.js';
+import { fetchImages } from './js/pixabay-api.js';
 import { galleryEl, renderImageCards } from '/js/render-functions.js';
 import iziToast from 'izitoast';
 import SimpleLightbox from 'simplelightbox';
 import './js/scroll-to-up';
 import errorIcon from './img/error.svg';
 
+const searchFormEl = document.querySelector('.js-search-form');
+const loadBtnEl = document.querySelector('.js-load-btn');
 const loaderEl = document.querySelector('.js-loader');
 
-const onFormSubmit = event => {
+let userQuery = null;
+let page = 1;
+const perPage = 15;
+let totalPages = null;
+
+const gallery = new SimpleLightbox('.js-img-list a', {
+  captionsData: 'alt',
+  captionDelay: 200,
+});
+
+const onFormSubmit = async event => {
   event.preventDefault();
 
   galleryEl.innerHTML = '';
 
-  const userQuery = searchFormEl.elements.search_request.value.trim();
+  loadBtnEl.classList.add('hidden');
+
+  userQuery = searchFormEl.elements.search_request.value.trim();
+  page = 1;
 
   if (userQuery === '') {
     iziToast.show({
@@ -27,46 +42,88 @@ const onFormSubmit = event => {
 
   loaderEl.classList.remove('hidden');
 
-  fetchImages(userQuery)
-    .then(imagesData => {
-      if (imagesData.hits.length === 0) {
-        loaderEl.classList.add('hidden');
+  try {
+    const { data } = await fetchImages(userQuery, page, perPage);
 
-        iziToast.show({
-          iconUrl: errorIcon,
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-          position: 'topRight',
-          maxWidth: '432px',
-          backgroundColor: '#ef4040',
-          theme: 'dark',
-          messageColor: '#ffffff',
-        });
+    totalPages = Math.ceil(data.totalHits / perPage);
 
-        galleryEl.innerHTML = '';
-
-        searchFormEl.reset();
-
-        return;
-      }
-
-      renderImageCards(imagesData.hits);
-
+    if (data.total === 0) {
       loaderEl.classList.add('hidden');
+
+      iziToast.show({
+        iconUrl: errorIcon,
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
+        position: 'topRight',
+        maxWidth: '432px',
+        backgroundColor: '#ef4040',
+        theme: 'dark',
+        messageColor: '#ffffff',
+      });
+
+      galleryEl.innerHTML = '';
 
       searchFormEl.reset();
 
-      new SimpleLightbox('.js-img-list a', {
-        captionsData: 'alt',
-        captionDelay: 200,
-      }).refresh();
-    })
-    .catch(err =>
-      iziToast.error({
-        message: err.message,
+      return;
+    }
+
+    renderImageCards(data.hits);
+
+    page += 1;
+
+    loaderEl.classList.add('hidden');
+    loadBtnEl.classList.remove('hidden');
+
+    searchFormEl.reset();
+
+    gallery.refresh();
+  } catch (err) {
+    iziToast.error({
+      message: err.message,
+      position: 'topRight',
+    });
+  }
+};
+
+const onBtnClick = async () => {
+  try {
+    loaderEl.classList.remove('hidden');
+    loadBtnEl.classList.add('hidden');
+
+    const { data } = await fetchImages(userQuery, page, perPage);
+
+    renderImageCards(data.hits);
+    gallery.refresh();
+
+    const cardEl = document.querySelector('.js-item');
+
+    const { height } = cardEl.getBoundingClientRect();
+    window.scrollBy({ top: height * 2.5, behavior: 'smooth' });
+
+    page += 1;
+
+    if (page > totalPages) {
+      iziToast.info({
+        message: 'We are sorry but you have reached the end of search results.',
         position: 'topRight',
-      })
-    );
+      });
+
+      loaderEl.classList.add('hidden');
+      loadBtnEl.classList.add('hidden');
+
+      return;
+    }
+
+    loaderEl.classList.add('hidden');
+    loadBtnEl.classList.remove('hidden');
+  } catch (err) {
+    iziToast.error({
+      message: err.message,
+      position: 'topRight',
+    });
+  }
 };
 
 searchFormEl.addEventListener('submit', onFormSubmit);
+loadBtnEl.addEventListener('click', onBtnClick);

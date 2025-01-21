@@ -38,5 +38,5 @@ function createImageCard(image) {
 
 export function renderImageCards(images) {
   const galleryTemplate = images.map(image => createImageCard(image)).join('');
-  galleryEl.innerHTML = galleryTemplate;
+  galleryEl.insertAdjacentHTML('beforeend', galleryTemplate);
 }
