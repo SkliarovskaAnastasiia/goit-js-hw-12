@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="#" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixabay Gallery</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+    />
+    <script type="module" crossorigin src="/goit-js-hw-12/index.js"></script>
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-12/assets/vendor-CSTHH2rc.js">
+    <link rel="stylesheet" crossorigin href="/goit-js-hw-12/assets/index-CN6WyVB_.css">
+  </head>
+  <body>
+    <div class="content-wrapper">
+      <form class="search-form js-search-form">
+        <input
+          class="iput-field"
+          type="text"
+          name="search_request"
+          placeholder="Search images..."
+          required
+        />
+        <button class="search-btn">Search</button>
+      </form>
+
+      <ul class="img-list js-img-list"></ul>
+      <button class="load-btn js-load-btn hidden">Load more</button>
+      <span class="js-loader loader hidden"></span>
+      <a href="#" class="arrow-up js-arrow">
+        <svg
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 512 512"
+        >
+          <g id="icomoon-ignore"></g>
+          <path
+            d="M438.627 201.373l-160-160c-12.496-12.497-32.757-12.497-45.254 0l-160 160c-12.497 12.497-12.497 32.758 0 45.255s32.758 12.498 45.255 0l105.372-105.373v306.745c0 17.673 14.327 32 32 32s32-14.327 32-32v-306.745l105.373 105.373c6.248 6.248 14.438 9.372 22.627 9.372s16.379-3.124 22.627-9.373c12.497-12.497 12.497-32.757 0-45.254z"
+          ></path>
+        </svg>
+      </a>
+    </div>
+
+    <footer class="page-footer">
+      <a href="https://pixabay.com/" class="footer-link" target="_blank">
+        Pixabay
+      </a>
+    </footer>
+  </body>
+</html>
