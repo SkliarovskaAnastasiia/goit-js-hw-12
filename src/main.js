@@ -27,7 +27,6 @@ const onFormSubmit = async event => {
   loadBtnEl.classList.add('hidden');
 
   userQuery = searchFormEl.elements.search_request.value.trim();
-  page = 1;
 
   if (userQuery === '') {
     iziToast.show({
@@ -43,6 +42,8 @@ const onFormSubmit = async event => {
   loaderEl.classList.remove('hidden');
 
   try {
+    page = 1;
+
     const { data } = await fetchImages(userQuery, page, perPage);
 
     totalPages = Math.ceil(data.totalHits / perPage);
@@ -69,15 +70,22 @@ const onFormSubmit = async event => {
     }
 
     renderImageCards(data.hits);
-
-    page += 1;
-
-    loaderEl.classList.add('hidden');
-    loadBtnEl.classList.remove('hidden');
+    gallery.refresh();
 
     searchFormEl.reset();
 
-    gallery.refresh();
+    loaderEl.classList.add('hidden');
+
+    if (totalPages > 1) {
+      loadBtnEl.classList.remove('hidden');
+      loadBtnEl.addEventListener('click', onBtnClick);
+    } else {
+      iziToast.info({
+        message:
+          'We are sorry, but you have reached the end of search results.',
+        position: 'topRight',
+      });
+    }
   } catch (err) {
     iziToast.error({
       message: err.message,
@@ -91,26 +99,28 @@ const onBtnClick = async () => {
     loaderEl.classList.remove('hidden');
     loadBtnEl.classList.add('hidden');
 
+    page++;
+
     const { data } = await fetchImages(userQuery, page, perPage);
 
     renderImageCards(data.hits);
     gallery.refresh();
 
-    const cardEl = document.querySelector('.js-item');
-
-    const { height } = cardEl.getBoundingClientRect();
+    const { height } = document
+      .querySelector('.js-item')
+      .getBoundingClientRect();
     window.scrollBy({ top: height * 2.5, behavior: 'smooth' });
 
-    page += 1;
-
-    if (page > totalPages) {
-      iziToast.info({
-        message: 'We are sorry but you have reached the end of search results.',
-        position: 'topRight',
-      });
-
+    if (page === totalPages) {
       loaderEl.classList.add('hidden');
       loadBtnEl.classList.add('hidden');
+      loadBtnEl.removeEventListener('click', onBtnClick);
+
+      iziToast.info({
+        message:
+          'We are sorry, but you have reached the end of search results.',
+        position: 'topRight',
+      });
 
       return;
     }
@@ -126,4 +136,3 @@ const onBtnClick = async () => {
 };
 
 searchFormEl.addEventListener('submit', onFormSubmit);
-loadBtnEl.addEventListener('click', onBtnClick);
