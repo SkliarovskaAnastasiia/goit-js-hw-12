@@ -109,7 +109,7 @@ const onBtnClick = async () => {
     const { height } = document
       .querySelector('.js-item')
       .getBoundingClientRect();
-    window.scrollBy({ top: height * 2.5, behavior: 'smooth' });
+    window.scrollBy({ top: height * 2.2, behavior: 'smooth' });
 
     if (page === totalPages) {
       loaderEl.classList.add('hidden');
